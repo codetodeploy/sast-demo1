@@ -16,6 +16,26 @@ pipeline {
 					sh 'mvn snyk:test -fn'
 				}
 			}
-    }		
+    }
+
+    stage('Build') { 
+            steps { 
+               withDockerRegistry([credentialsId: "dockerlogin", url: ""]) {
+                 script{
+                 app =  docker.build("skabhi003")
+                 }
+               }
+            }
+    }
+
+	stage('Push') {
+            steps {
+                script{
+                    docker.withRegistry('https://268285888909.dkr.ecr.ap-south-1.amazonaws.com/', 'ecr:ap-south-1:aws-credentials') {
+                    app.push("latest")
+                    }
+                }
+            }
+    	}		
   }
 }
